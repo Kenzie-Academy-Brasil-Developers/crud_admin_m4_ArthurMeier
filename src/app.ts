@@ -1,6 +1,14 @@
-import express, { Application, json } from 'express'
+import express, { Application, json } from "express";
 
-const app: Application = express()
-app.use(json())
+const app: Application = express();
+app.use(json());
 
-export default app
+app.post("/users");
+app.post("/login");
+app.get("/users");
+app.get("/users/profile");
+app.patch("/users/:id");
+app.delete("/users/:id");
+app.put("/users/:id/recover");
+
+export default app;
