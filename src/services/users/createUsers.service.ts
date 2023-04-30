@@ -1,15 +1,16 @@
 import format from "pg-format";
-import { TUserResponse, TUserResquest } from "../../intefaces/users.interfaces";
+import { TUserResponse, TUserRequest } from "../../intefaces/users.interfaces";
 import { QueryResult } from "pg";
 import { client } from "../../database";
 import { responseUserSchema } from "../../schemas/users.schemas";
 import * as bcrypt from "bcryptjs";
 
 const createUsersService = async (
-  userData: TUserResquest
+  userData: TUserRequest
 ): Promise<TUserResponse> => {
   userData.password = await bcrypt.hash(userData.password, 10);
 
+  userData.active = true;
   const queryString: string = format(
     `
         INSERT INTO
@@ -19,8 +20,9 @@ const createUsersService = async (
         RETURNING *;
     `,
     Object.keys(userData),
-    Object.keys(userData)
+    Object.values(userData)
   );
+
   const queryResult: QueryResult<TUserResponse> = await client.query(
     queryString
   );

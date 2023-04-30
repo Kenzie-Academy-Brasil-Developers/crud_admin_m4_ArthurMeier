@@ -1,7 +1,9 @@
 import { Router } from "express";
 import {
   createUsersController,
+  deleteUserController,
   listAllUsersController,
+  recoverUserController,
   retriveUserController,
   updateUserController,
 } from "../controllers/users.controllers";
@@ -12,6 +14,9 @@ import { requestUserSchema, updateUserSchema } from "../schemas/users.schemas";
 import verifyTokenExist from "../middlewares/verifyTokenExists.middleware";
 import verifyUserIsAdmin from "../middlewares/verifyUserIsAdmin.middleware";
 import verifyUserIsActive from "../middlewares/verifyUserIsActive.middleware";
+import verifyIdExistsFromParams from "../middlewares/verifyIdExistFromParams.middleware";
+import verifyUserIsAdminOrHimself from "../middlewares/VerifyUserIsAdminOrHimself.middleware";
+import verifyUserIsntActive from "../middlewares/verifyUserIsntActive.middleware";
 
 const userRoutes: Router = Router();
 
@@ -26,16 +31,17 @@ userRoutes.get("", verifyTokenExist, verifyUserIsAdmin, listAllUsersController);
 
 userRoutes.get(
   "/profile",
-  verifyIdExists,
   verifyTokenExist,
+  verifyIdExists,
   retriveUserController
 );
 
 userRoutes.patch(
-  "/id",
+  "/:id",
   verifyTokenExist,
+  verifyIdExistsFromParams,
   verifyBodyIsValid(updateUserSchema),
-  verifyIdExists,
+  verifyUserIsAdminOrHimself,
   updateUserController
 );
 
@@ -43,10 +49,18 @@ userRoutes.put(
   "/:id/recover",
   verifyTokenExist,
   verifyIdExists,
+  verifyUserIsAdmin,
   verifyUserIsActive,
-  verifyUserIsAdmin
+  recoverUserController
 );
 
-userRoutes.delete("/:id", verifyTokenExist, verifyIdExists);
+userRoutes.delete(
+  "/:id",
+  verifyTokenExist,
+  verifyIdExistsFromParams,
+  verifyUserIsntActive,
+  verifyUserIsAdminOrHimself,
+  deleteUserController
+);
 
 export default userRoutes;

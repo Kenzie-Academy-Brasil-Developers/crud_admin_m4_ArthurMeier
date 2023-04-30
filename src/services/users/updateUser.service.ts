@@ -1,11 +1,8 @@
 import format from "pg-format";
-import {
-  TUserResponse,
-  TUserResquest,
-  TUserUpdate,
-} from "../../intefaces/users.interfaces";
+import { TUserResponse, TUserUpdate } from "../../intefaces/users.interfaces";
 import { QueryConfig, QueryResult } from "pg";
 import { client } from "../../database";
+import { responseUserSchema } from "../../schemas/users.schemas";
 
 const updateUserService = async (
   userId: number,
@@ -13,14 +10,14 @@ const updateUserService = async (
 ): Promise<TUserResponse> => {
   const queryString: string = format(
     `
-        UPDATE
-            users
-        WHERE
-            id=$1
-        RETURNING *
+      UPDATE users
+          SET (%I) = ROW(%L)
+      WHERE
+          id = $1
+      RETURNING *;
     `,
     Object.keys(userData),
-    Object.keys(userData)
+    Object.values(userData)
   );
 
   const queryConfig: QueryConfig = {
@@ -32,7 +29,9 @@ const updateUserService = async (
     queryConfig
   );
 
-  return queryResult.rows[0];
+  const user: TUserResponse = responseUserSchema.parse(queryResult.rows[0]);
+
+  return user;
 };
 
 export default updateUserService;

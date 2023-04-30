@@ -41,9 +41,9 @@ const createLoginService = async (
   }
 
   const token: string = jwt.sign(
-    { email: user.email },
-    process.env.SECRET_KEY!,
-    { expiresIn: process.env.EXPIRES_IN }
+    { email: user.email, admin: user.admin },
+    String(process.env.SECRET_KEY!),
+    { expiresIn: process.env.EXPIRES_IN, subject: String(user.id) }
   );
 
   return { token };

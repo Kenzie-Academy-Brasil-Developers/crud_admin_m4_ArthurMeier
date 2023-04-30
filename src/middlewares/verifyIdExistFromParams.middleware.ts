@@ -4,12 +4,12 @@ import { NextFunction, Response, Request } from "express";
 import { client } from "../database";
 import { IUser } from "../intefaces/users.interfaces";
 
-const verifyIdExists = async (
+const verifyIdExistsFromParams = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const userId = parseInt(res.locals.token.id);
+  const userId = parseInt(req.params.id);
 
   const queryString: string = `
   SELECT
@@ -36,4 +36,4 @@ const verifyIdExists = async (
   return next();
 };
 
-export default verifyIdExists;
+export default verifyIdExistsFromParams;

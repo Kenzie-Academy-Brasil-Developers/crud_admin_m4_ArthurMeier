@@ -8,13 +8,15 @@ import {
 import listAllUsersService from "../services/users/listAllUsers.service";
 import retrieveUserService from "../services/users/retrieveUsers.service";
 import updateUserService from "../services/users/updateUser.service";
-import { requestUserSchema, updateUserSchema } from "../schemas/users.schemas";
+import deleteUserService from "../services/users/deleteUser.service";
+import recoverUserService from "../services/users/recoverUserService.service";
 
 const createUsersController = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   const userData: TUserRequest = req.body;
+
   const newUser: TUserResponse = await createUsersService(userData);
 
   return res.status(201).json(newUser);
@@ -45,9 +47,31 @@ const updateUserController = async (
   const userId: number = parseInt(req.params.id);
   const userData: TUserUpdate = req.body;
 
-  const upadateUser = updateUserService(userId, userData);
+  const upadateUser = await updateUserService(userId, userData);
 
   return res.json(upadateUser);
+};
+
+const deleteUserController = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const userId: number = parseInt(req.params.id);
+
+  const deleteUser = await deleteUserService(userId);
+
+  return res.status(204).send();
+};
+
+const recoverUserController = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const userId: number = parseInt(req.params.id);
+
+  const recover = await recoverUserService(userId);
+
+  return res.json(recover);
 };
 
 export {
@@ -55,4 +79,6 @@ export {
   listAllUsersController,
   retriveUserController,
   updateUserController,
+  deleteUserController,
+  recoverUserController,
 };

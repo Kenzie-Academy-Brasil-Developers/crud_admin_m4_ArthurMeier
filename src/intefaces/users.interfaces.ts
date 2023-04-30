@@ -1,10 +1,12 @@
 import { z } from "zod";
 import {
+  userSchema,
   requestUserSchema,
   responseUserSchema,
-  userSchema,
   updateUserSchema,
+  deleteUserSchema,
 } from "../schemas/users.schemas";
+import { type } from "os";
 
 type IUser = z.infer<typeof userSchema>;
 
@@ -14,4 +16,6 @@ type TUserResponse = z.infer<typeof responseUserSchema>;
 
 type TUserUpdate = z.infer<typeof updateUserSchema>;
 
-export { IUser, TUserResponse, TUserRequest, TUserUpdate };
+type TUserDelete = z.infer<typeof deleteUserSchema>;
+
+export { IUser, TUserResponse, TUserRequest, TUserUpdate, TUserDelete };

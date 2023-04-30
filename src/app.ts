@@ -1,4 +1,5 @@
 import "express-async-errors";
+import "dotenv/config";
 import express, { Application, json } from "express";
 import userRoutes from "./routers/users.routes";
 import { handleErrors } from "./error";

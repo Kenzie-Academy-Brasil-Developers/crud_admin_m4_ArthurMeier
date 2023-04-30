@@ -1,15 +1,19 @@
 import { NextFunction, Request, Response } from "express";
-import { AppError } from "../error";
 import { QueryConfig, QueryResult } from "pg";
-import { IUser } from "../intefaces/users.interfaces";
 import { client } from "../database";
+import { IUser } from "../intefaces/users.interfaces";
+import { AppError } from "../error";
 
-const verifyUserIsActive = async (
+type TEmail = {
+  email: string;
+};
+
+const verifyEmailExistsLogin = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<Response | void> => {
-  const { id } = req.params;
+) => {
+  const { email }: TEmail = req.body;
 
   const queryString: string = `
       SELECT
@@ -17,23 +21,21 @@ const verifyUserIsActive = async (
       FROM
         users
       WHERE
-        id=$1;
+        email=$1;
   `;
 
   const queryConfig: QueryConfig = {
     text: queryString,
-    values: [id],
+    values: [email],
   };
 
   const queryResult: QueryResult<IUser> = await client.query(queryConfig);
 
-  const user = queryResult.rows[0];
-
-  if (user.active === true) {
-    throw new AppError("User already active", 400);
+  if (queryResult.rowCount === 0) {
+    throw new AppError("Wrong email/password", 401);
   }
 
   return next();
 };
 
-export default verifyUserIsActive;
+export default verifyEmailExistsLogin;

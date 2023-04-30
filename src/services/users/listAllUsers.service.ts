@@ -1,9 +1,7 @@
-import { QueryConfig, QueryResult } from "pg";
-import { TUserResponse } from "../../intefaces/users.interfaces";
+import { QueryResult } from "pg";
+import { IUser, TUserResponse } from "../../intefaces/users.interfaces";
 import { client } from "../../database";
-import { AppError } from "../../error";
-import jwt from "jsonwebtoken";
-import "dotenv/config";
+import { responseAllUsersSchema } from "../../schemas/users.schemas";
 
 const listAllUsersService = async (): Promise<Array<TUserResponse>> => {
   const queryString: string = `
@@ -13,11 +11,13 @@ const listAllUsersService = async (): Promise<Array<TUserResponse>> => {
             users;
     `;
 
-  const queryResult: QueryResult<TUserResponse> = await client.query(
-    queryString
+  const queryResult: QueryResult<IUser> = await client.query(queryString);
+
+  const listUsers: TUserResponse[] = responseAllUsersSchema.parse(
+    queryResult.rows
   );
 
-  return queryResult.rows;
+  return listUsers;
 };
 
 export default listAllUsersService;
